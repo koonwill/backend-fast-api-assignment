@@ -11,7 +11,7 @@ IP = "127.0.0.1"       # default: 127.0.0.1
 PORT = "8000"          # default: 8000
 
 DATABASE_NAME = "exceed01"
-COLLECTION_NAME = "hotel_reservation"
+COLLECTION_NAME = "will"
 username = os.getenv("user")
 password = urllib.parse.quote(os.getenv('password'))
 MONGO_DB_URL = f"mongodb://{username}:{password}@mongo.exceed19.online"
