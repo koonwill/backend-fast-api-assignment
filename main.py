@@ -8,7 +8,7 @@ import urllib
 load_dotenv('.env')
 
 DATABASE_NAME = "exceed01"
-COLLECTION_NAME = "hotel_reservation"
+COLLECTION_NAME = "will"
 username = os.getenv("user")
 password = urllib.parse.quote(os.getenv('password'))
 MONGO_DB_URL = f"mongodb://{username}:{password}@mongo.exceed19.online"
@@ -16,7 +16,7 @@ MONGO_DB_PORT = 8443
 
 
 class Reservation(BaseModel):
-    name : str
+    name: str
     start_date: date
     end_date: date
     room_id: int
@@ -32,13 +32,14 @@ app = FastAPI()
 
 
 def room_avaliable(room_id: int, start_date: str, end_date: str):
-    query={"room_id": room_id,
-           "$or": 
-                [{"$and": [{"start_date": {"$lte": start_date}}, {"end_date": {"$gte": start_date}}]},
-                 {"$and": [{"start_date": {"$lte": end_date}}, {"end_date": {"$gte": end_date}}]},
-                 {"$and": [{"start_date": {"$gte": start_date}}, {"end_date": {"$lte": end_date}}]}]
-            }
-    
+    query = {"room_id": room_id,
+             "$or":
+             [{"$and": [{"start_date": {"$lte": start_date}}, {"end_date": {"$gte": start_date}}]},
+              {"$and": [{"start_date": {"$lte": end_date}},
+                        {"end_date": {"$gte": end_date}}]},
+              {"$and": [{"start_date": {"$gte": start_date}}, {"end_date": {"$lte": end_date}}]}]
+             }
+
     result = collection.find(query, {"_id": 0})
     list_cursor = list(result)
 
@@ -46,20 +47,27 @@ def room_avaliable(room_id: int, start_date: str, end_date: str):
 
 
 @app.get("/reservation/by-name/{name}")
-def get_reservation_by_name(name:str):
-    pass
+def get_reservation_by_name(name: str):
+    res = collection.find({"result": name})
+    return res
+
 
 @app.get("/reservation/by-room/{room_id}")
 def get_reservation_by_room(room_id: int):
-    pass
+    res = collection.find({'room_id': room_id})
+    ls_res = list(res)
+    return {'result': ls_res}
+
 
 @app.post("/reservation")
-def reserve(reservation : Reservation):
+def reserve(reservation: Reservation):
     pass
+
 
 @app.put("/reservation/update")
 def update_reservation(reservation: Reservation, new_start_date: date = Body(), new_end_date: date = Body()):
     pass
+
 
 @app.delete("/reservation/delete")
 def cancel_reservation(reservation: Reservation):
