@@ -49,7 +49,10 @@ def room_avaliable(room_id: int, start_date: str, end_date: str):
 
 @app.get("/reservation/by-name/{name}", status_code=200)
 def get_reservation_by_name(name: str):
-    res = collection.find({"name": name}, {'_id': False})
+    try:
+        res = collection.find({"name": name}, {'_id': False})
+    except Exception:
+        raise HTTPException(400)
     return {'result': list(res)}
 
 
