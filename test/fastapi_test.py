@@ -28,9 +28,12 @@ mock_name1 = "John Doe"
 
 
 def connect_mongodb():
-    client = MongoClient(f"{MONGO_DB_URL}:{MONGO_DB_PORT}/?authMechanism=DEFAULT")
-    global db; db = client[DATABASE_NAME]
-    global collection; collection = db[COLLECTION_NAME]
+    client = MongoClient(
+        f"{MONGO_DB_URL}:{MONGO_DB_PORT}/?authMechanism=DEFAULT")
+    global db
+    db = client[DATABASE_NAME]
+    global collection
+    collection = db[COLLECTION_NAME]
 
     collection.delete_many({})
 
@@ -43,7 +46,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_empty_by_name(self):
         res = requests.get(BASE_URL + f"/reservation/by-name/{mock_name}")
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json(), {
             "result": []
@@ -51,7 +54,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_empty_by_room(self):
         res = requests.get(BASE_URL + f"/reservation/by-room/10")
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json(), {
             "result": []
@@ -73,12 +76,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj1)))
 
@@ -103,12 +106,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj1)))
 
@@ -126,7 +129,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -139,7 +142,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -152,28 +155,16 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(list(collection.find(myobj)))
 
-    def test_post_room_id_int_in_str_form(self):
-        myobj = {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-01",
-            "room_id": "10"
-        }
-
-        res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
         self.assertEqual(res.status_code, 200)
+        self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(
             {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-01",
-            "room_id": 10
-        }
+                "name": mock_name,
+                "start_date": "2017-01-01",
+                "end_date": "2017-01-01",
+                "room_id": 10
+            }
         )))
 
     def test_post_room_id_str_in_str_form(self):
@@ -185,7 +176,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertFalse(list(collection.find(myobj)))
 
@@ -198,15 +189,15 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(
             {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-15",
-            "room_id": 10
-        }
+                "name": mock_name,
+                "start_date": "2017-01-01",
+                "end_date": "2017-01-15",
+                "room_id": 10
+            }
         )))
 
     def test_post_end_day_improper_format(self):
@@ -218,15 +209,15 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(
             {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-09",
-            "room_id": 10
-        }
+                "name": mock_name,
+                "start_date": "2017-01-01",
+                "end_date": "2017-01-09",
+                "room_id": 10
+            }
         )))
 
     def test_post_start_month_improper_format(self):
@@ -238,15 +229,15 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(
             {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-15",
-            "room_id": 10
-        }
+                "name": mock_name,
+                "start_date": "2017-01-01",
+                "end_date": "2017-01-15",
+                "room_id": 10
+            }
         )))
 
     def test_post_end_month_improper_format(self):
@@ -258,15 +249,15 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(
             {
-            "name": mock_name,
-            "start_date": "2017-01-01",
-            "end_date": "2017-01-09",
-            "room_id": 10
-        }
+                "name": mock_name,
+                "start_date": "2017-01-01",
+                "end_date": "2017-01-09",
+                "room_id": 10
+            }
         )))
 
     def test_post_start_date_come_after_end_date(self):
@@ -278,7 +269,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj)))
 
@@ -298,12 +289,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -330,17 +321,17 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertFalse(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertFalse(list(collection.find(myobj1)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj2)
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertFalse(list(collection.find(myobj2)))
 
@@ -360,12 +351,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -385,12 +376,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -410,12 +401,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -435,12 +426,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -460,12 +451,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -485,12 +476,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -510,12 +501,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -535,12 +526,12 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj1)
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertFalse(list(collection.find(myobj1)))
 
@@ -563,7 +554,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -572,7 +563,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(new_obj)))
@@ -596,7 +587,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -605,7 +596,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(new_obj)))
@@ -629,7 +620,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -638,7 +629,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(new_obj)))
@@ -662,7 +653,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -671,7 +662,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(new_obj)))
@@ -695,7 +686,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -704,7 +695,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
         self.assertTrue(list(collection.find(new_obj)))
@@ -728,7 +719,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -738,7 +729,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -761,7 +752,7 @@ class TestApi(unittest.TestCase):
         new_end_date2 = "2017-01-20"
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
@@ -770,7 +761,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find({
@@ -785,7 +776,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date1,
             "new_end_date": new_end_date1
         })
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find({
@@ -800,7 +791,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date2,
             "new_end_date": new_end_date2
         })
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find({
@@ -829,7 +820,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -839,7 +830,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -863,7 +854,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -873,7 +864,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -897,7 +888,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -907,7 +898,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -931,7 +922,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -941,11 +932,11 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
-        
+
     def test_put_start_date_overlap_at_other_reservation_end_date(self):
         myobj = {
             "name": mock_name,
@@ -965,7 +956,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -975,7 +966,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -999,7 +990,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -1009,7 +1000,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -1033,7 +1024,7 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -1043,7 +1034,7 @@ class TestApi(unittest.TestCase):
             "new_start_date": new_start_date,
             "new_end_date": new_end_date
         })
-        
+
         self.assertEqual(res.status_code, 400)
         self.assertTrue(list(collection.find(myobj)))
         self.assertFalse(list(collection.find(new_obj)))
@@ -1057,17 +1048,16 @@ class TestApi(unittest.TestCase):
         }
 
         res = requests.post(BASE_URL + f"/reservation", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(list(collection.find(myobj)))
 
         res = requests.delete(BASE_URL + f"/reservation/delete", json=myobj)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertFalse(list(collection.find(myobj)))
-        
 
-    
+
 if __name__ == "__main__":
     connect_mongodb()
     unittest.main(verbosity=2, exit=False)
